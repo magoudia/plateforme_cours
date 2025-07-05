@@ -122,23 +122,23 @@ const CourseDetails: React.FC = () => {
       return {
         title: 'Paiement Wave',
         instructions: [
-          `Envoyez ${amount} CFA au numéro : 221 77 123 45 67`,
+          `Envoyez ${amount} CFA au numéro : 783079445`,
           'Ou scannez le QR code Wave ci-dessous',
           'Attendez la confirmation de paiement',
           'Cliquez sur "J\'ai payé" une fois le paiement effectué'
         ],
-        qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=wave://pay?phone=221771234567&amount=' + (course.price * 655)
+        qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=wave://pay?phone=783079445&amount=' + (course.price * 655)
       };
     } else if (paymentMethod === 'orange') {
       return {
         title: 'Paiement Orange Money',
         instructions: [
-          `Envoyez ${amount} CFA au numéro : 221 77 123 45 67`,
-          'Ou utilisez le code USSD : #150*1*221771234567*' + (course.price * 655) + '#',
+          `Envoyez ${amount} CFA au numéro : 783079445`,
+          'Ou utilisez le code USSD : #150*1*783079445*' + (course.price * 655) + '#',
           'Attendez la confirmation de paiement',
           'Cliquez sur "J\'ai payé" une fois le paiement effectué'
         ],
-        qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=orange://pay?phone=221771234567&amount=' + (course.price * 655)
+        qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=orange://pay?phone=783079445&amount=' + (course.price * 655)
       };
     }
     return null;
@@ -418,10 +418,10 @@ const CourseDetails: React.FC = () => {
 
       {/* Modale de paiement professionnelle multi-étapes */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-left relative">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg max-w-md w-full text-left relative max-h-[90vh] flex flex-col">
             {/* Progression */}
-            <div className="flex items-center mb-6">
+            <div className="flex items-center mb-6 p-6 pb-4">
               {[1,2,3,4,5].map((s) => (
                 <div key={s} className={`flex-1 h-2 mx-1 rounded-full ${step >= s ? 'bg-iai-blue' : 'bg-gray-200'}`}></div>
               ))}
@@ -435,126 +435,133 @@ const CourseDetails: React.FC = () => {
                 <span className="text-iai-blue font-medium">Paiement en cours...</span>
               </div>
             )}
-            {/* Étape 1 : Résumé du cours */}
-            {step === 1 && (
-              <div>
-                <h2 className="text-xl font-bold mb-4">Résumé du cours</h2>
-                <div className="mb-2 font-semibold">{course.title}</div>
-                <div className="mb-2 text-sm text-gray-600">Instructeur : {course.instructor}</div>
-                <div className="mb-2 text-sm text-gray-600">Catégorie : {course.category}</div>
-                <div className="mb-2 text-sm text-gray-600">Prix : <span className="font-bold">{(course.price * 655).toLocaleString()} CFA</span></div>
-                <div className="mb-4 text-gray-600 text-sm">{course.description.slice(0, 100)}...</div>
-                <button onClick={() => setStep(2)} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors w-full">Suivant</button>
-              </div>
-            )}
-            {/* Étape 2 : Infos personnelles */}
-            {step === 2 && (
-              <form onSubmit={e => { e.preventDefault(); setStep(3); }}>
-                <h2 className="text-xl font-bold mb-4">Vos informations</h2>
-                <div className="mb-3">
-                  <label className="block mb-1 font-medium">Nom</label>
-                  <input type="text" required className="w-full px-3 py-2 border rounded" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+            
+            {/* Contenu scrollable */}
+            <div className="flex-1 overflow-y-auto px-6">
+              {/* Étape 1 : Résumé du cours */}
+              {step === 1 && (
+                <div>
+                  <h2 className="text-xl font-bold mb-4">Résumé du cours</h2>
+                  <div className="mb-2 font-semibold">{course.title}</div>
+                  <div className="mb-2 text-sm text-gray-600">Instructeur : {course.instructor}</div>
+                  <div className="mb-2 text-sm text-gray-600">Catégorie : {course.category}</div>
+                  <div className="mb-2 text-sm text-gray-600">Prix : <span className="font-bold">{(course.price * 655).toLocaleString()} CFA</span></div>
+                  <div className="mb-4 text-gray-600 text-sm">{course.description.slice(0, 100)}...</div>
+                  <button onClick={() => setStep(2)} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors w-full">Suivant</button>
                 </div>
-                <div className="mb-3">
-                  <label className="block mb-1 font-medium">Email</label>
-                  <input type="email" required className="w-full px-3 py-2 border rounded" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-                </div>
-                <div className="flex justify-between mt-6">
-                  <button type="button" onClick={() => setStep(1)} className="text-gray-500 hover:text-gray-900">Précédent</button>
-                  <button type="submit" disabled={!isStep2Valid} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors disabled:opacity-50">Suivant</button>
-                </div>
-              </form>
-            )}
-            {/* Étape 3 : Choix paiement */}
-            {step === 3 && (
-              <form onSubmit={e => { 
-                e.preventDefault(); 
-                if (shouldShowPaymentInstructions()) {
-                  setStep(4);
-                } else {
-                  setStep(5);
-                }
-              }}>
-                <h2 className="text-xl font-bold mb-4">Mode de paiement</h2>
-                <div className="flex gap-4 mb-4">
-                  <div
-                    className={`flex-1 border rounded-lg p-3 flex flex-col items-center cursor-pointer transition-all ${paymentMethod === 'wave' ? 'border-iai-blue ring-2 ring-iai-blue' : 'border-gray-200'}`}
-                    onClick={() => setPaymentMethod('wave')}
-                  >
-                    <img src={waveLogo} alt="Wave" className="h-10 mb-2" />
-                    <span className="font-medium">Wave</span>
-                  </div>
-                  <div
-                    className={`flex-1 border rounded-lg p-3 flex flex-col items-center cursor-pointer transition-all ${paymentMethod === 'orange' ? 'border-iai-blue ring-2 ring-iai-blue' : 'border-gray-200'}`}
-                    onClick={() => setPaymentMethod('orange')}
-                  >
-                    <img src={orangeLogo} alt="Orange Money" className="h-10 mb-2" />
-                    <span className="font-medium">Orange Money</span>
-                  </div>
-                  <div
-                    className={`flex-1 border rounded-lg p-3 flex flex-col items-center cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-iai-blue ring-2 ring-iai-blue' : 'border-gray-200'}`}
-                    onClick={() => setPaymentMethod('card')}
-                  >
-                    <img src={visaLogo} alt="Carte Visa" className="h-10 mb-2" />
-                    <span className="font-medium">Carte Visa</span>
-                  </div>
-                </div>
-                {paymentMethod !== 'card' && (
+              )}
+              {/* Étape 2 : Infos personnelles */}
+              {step === 2 && (
+                <form onSubmit={e => { e.preventDefault(); setStep(3); }}>
+                  <h2 className="text-xl font-bold mb-4">Vos informations</h2>
                   <div className="mb-3">
-                    <label className="block mb-1 font-medium">Numéro de téléphone</label>
-                    <input 
-                      type="tel" 
-                      required 
-                      className="w-full px-3 py-2 border rounded" 
-                      value={form.phone} 
-                      onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} 
-                    />
-                    {shouldShowPaymentInstructions() && (
-                      <p className="text-sm text-green-600 mt-1">✓ Numéro valide - Vous serez redirigé vers les instructions de paiement</p>
-                    )}
+                    <label className="block mb-1 font-medium">Nom</label>
+                    <input type="text" required className="w-full px-3 py-2 border rounded" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
                   </div>
-                )}
-                {paymentMethod === 'card' && (
-                  <>
+                  <div className="mb-3">
+                    <label className="block mb-1 font-medium">Email</label>
+                    <input type="email" required className="w-full px-3 py-2 border rounded" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+                  </div>
+                  <div className="flex justify-between mt-6">
+                    <button type="button" onClick={() => setStep(1)} className="text-gray-500 hover:text-gray-900">Précédent</button>
+                    <button type="submit" disabled={!isStep2Valid} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors disabled:opacity-50">Suivant</button>
+                  </div>
+                </form>
+              )}
+              {/* Étape 3 : Choix paiement */}
+              {step === 3 && (
+                <form onSubmit={e => { 
+                  e.preventDefault(); 
+                  if (shouldShowPaymentInstructions()) {
+                    setStep(4);
+                  } else {
+                    setStep(5);
+                  }
+                }}>
+                  <h2 className="text-xl font-bold mb-4">Mode de paiement</h2>
+                  <div className="flex gap-4 mb-4">
+                    <div
+                      className={`flex-1 border rounded-lg p-3 flex flex-col items-center cursor-pointer transition-all ${paymentMethod === 'wave' ? 'border-iai-blue ring-2 ring-iai-blue' : 'border-gray-200'}`}
+                      onClick={() => setPaymentMethod('wave')}
+                    >
+                      <img src={waveLogo} alt="Wave" className="h-10 mb-2" />
+                      <span className="font-medium">Wave</span>
+                    </div>
+                    <div
+                      className={`flex-1 border rounded-lg p-3 flex flex-col items-center cursor-pointer transition-all ${paymentMethod === 'orange' ? 'border-iai-blue ring-2 ring-iai-blue' : 'border-gray-200'}`}
+                      onClick={() => setPaymentMethod('orange')}
+                    >
+                      <img src={orangeLogo} alt="Orange Money" className="h-10 mb-2" />
+                      <span className="font-medium">Orange Money</span>
+                    </div>
+                    <div
+                      className={`flex-1 border rounded-lg p-3 flex flex-col items-center cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-iai-blue ring-2 ring-iai-blue' : 'border-gray-200'}`}
+                      onClick={() => setPaymentMethod('card')}
+                    >
+                      <img src={visaLogo} alt="Carte Visa" className="h-10 mb-2" />
+                      <span className="font-medium">Carte Visa</span>
+                    </div>
+                  </div>
+                  {paymentMethod !== 'card' && (
                     <div className="mb-3">
-                      <label className="block mb-1 font-medium">Numéro de carte</label>
-                      <input type="text" required className="w-full px-3 py-2 border rounded" value={form.card} onChange={e => setForm(f => ({ ...f, card: e.target.value }))} />
+                      <label className="block mb-1 font-medium">Numéro de téléphone</label>
+                      <input 
+                        type="tel" 
+                        required 
+                        className="w-full px-3 py-2 border rounded" 
+                        value={form.phone} 
+                        onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} 
+                      />
+                      {shouldShowPaymentInstructions() && (
+                        <p className="text-sm text-green-600 mt-1">✓ Numéro valide - Vous serez redirigé vers les instructions de paiement</p>
+                      )}
                     </div>
-                    <div className="mb-3 flex gap-2">
-                      <div className="flex-1">
-                        <label className="block mb-1 font-medium">Date d'expiration</label>
-                        <input type="text" required placeholder="MM/AA" className="w-full px-3 py-2 border rounded" />
+                  )}
+                  {paymentMethod === 'card' && (
+                    <>
+                      <div className="mb-3">
+                        <label className="block mb-1 font-medium">Numéro de carte</label>
+                        <input type="text" required className="w-full px-3 py-2 border rounded" value={form.card} onChange={e => setForm(f => ({ ...f, card: e.target.value }))} />
                       </div>
-                      <div className="flex-1">
-                        <label className="block mb-1 font-medium">CVC</label>
-                        <input type="text" required placeholder="CVC" className="w-full px-3 py-2 border rounded" />
+                      <div className="mb-3 flex gap-2">
+                        <div className="flex-1">
+                          <label className="block mb-1 font-medium">Date d'expiration</label>
+                          <input type="text" required placeholder="MM/AA" className="w-full px-3 py-2 border rounded" />
+                        </div>
+                        <div className="flex-1">
+                          <label className="block mb-1 font-medium">CVC</label>
+                          <input type="text" required placeholder="CVC" className="w-full px-3 py-2 border rounded" />
+                        </div>
                       </div>
+                    </>
+                  )}
+                  <div className="flex justify-between mt-6">
+                    <button type="button" onClick={() => setStep(2)} className="text-gray-500 hover:text-gray-900">Précédent</button>
+                    <button type="submit" disabled={!isStep3Valid} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors disabled:opacity-50">
+                      {shouldShowPaymentInstructions() ? 'Voir les instructions' : 'Suivant'}
+                    </button>
+                  </div>
+                </form>
+              )}
+              {/* Étape 4 : Instructions de paiement mobile */}
+              {step === 4 && (paymentMethod === 'wave' || paymentMethod === 'orange') && (
+                <div>
+                  <h2 className="text-xl font-bold mb-4 text-center">{getPaymentInstructions()?.title}</h2>
+                  
+                  {/* QR Code fixe en haut */}
+                  <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                    <div className="text-center">
+                      <img 
+                        src={getPaymentInstructions()?.qrCode} 
+                        alt="QR Code de paiement" 
+                        className="mx-auto w-40 h-40 border-2 border-gray-300 rounded-lg"
+                      />
+                      <p className="text-sm text-gray-600 mt-2">Scannez ce QR code pour payer</p>
                     </div>
-                  </>
-                )}
-                <div className="flex justify-between mt-6">
-                  <button type="button" onClick={() => setStep(2)} className="text-gray-500 hover:text-gray-900">Précédent</button>
-                  <button type="submit" disabled={!isStep3Valid} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors disabled:opacity-50">
-                    {shouldShowPaymentInstructions() ? 'Voir les instructions' : 'Suivant'}
-                  </button>
-                </div>
-              </form>
-            )}
-            {/* Étape 4 : Instructions de paiement mobile */}
-            {step === 4 && (paymentMethod === 'wave' || paymentMethod === 'orange') && (
-              <div>
-                <h2 className="text-xl font-bold mb-4 text-center">{getPaymentInstructions()?.title}</h2>
-                
-                <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                  <div className="text-center mb-4">
-                    <img 
-                      src={getPaymentInstructions()?.qrCode} 
-                      alt="QR Code de paiement" 
-                      className="mx-auto w-48 h-48 border-2 border-gray-300 rounded-lg"
-                    />
                   </div>
                   
-                  <div className="space-y-3">
+                  {/* Instructions scrollables */}
+                  <div className="space-y-3 mb-4">
                     {getPaymentInstructions()?.instructions.map((instruction, index) => (
                       <div key={index} className="flex items-start">
                         <div className="bg-iai-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">
@@ -564,62 +571,77 @@ const CourseDetails: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <h3 className="font-semibold text-blue-900 mb-2">Informations importantes :</h3>
-                  <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• Le paiement doit être effectué depuis le numéro : {form.phone}</li>
-                    <li>• Conservez la confirmation de paiement</li>
-                    <li>• Votre inscription sera validée après confirmation</li>
-                  </ul>
-                </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h3 className="font-semibold text-blue-900 mb-2">Informations importantes :</h3>
+                    <ul className="text-sm text-blue-800 space-y-1">
+                      <li>• Le paiement doit être effectué depuis le numéro : {form.phone}</li>
+                      <li>• Conservez la confirmation de paiement</li>
+                      <li>• Votre inscription sera validée après confirmation</li>
+                    </ul>
+                  </div>
 
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <div className="text-center">
+                      <h3 className="font-semibold text-green-900 mb-2">Prêt à finaliser ?</h3>
+                      <p className="text-sm text-green-800">
+                        Une fois votre paiement effectué, cliquez sur le bouton ci-dessous
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Étape 5 : Récapitulatif et paiement */}
+              {step === 5 && (
+                <div>
+                  <h2 className="text-xl font-bold mb-4">Récapitulatif</h2>
+                  <div className="mb-2"><span className="font-medium">Nom :</span> {form.name}</div>
+                  <div className="mb-2"><span className="font-medium">Email :</span> {form.email}</div>
+                  <div className="mb-2"><span className="font-medium">Paiement :</span> {paymentMethod === 'card' ? 'Carte bancaire' : paymentMethod === 'wave' ? 'Wave' : 'Orange Money'}</div>
+                  {paymentMethod !== 'card' && <div className="mb-2"><span className="font-medium">Téléphone :</span> {form.phone}</div>}
+                  {paymentMethod === 'card' && <div className="mb-2"><span className="font-medium">Carte :</span> **** **** **** {form.card.slice(-4)}</div>}
+                  <div className="mb-4"><span className="font-medium">Montant :</span> <span className="font-bold">{(course.price * 655).toLocaleString()} CFA</span></div>
+                  
+                  {(paymentMethod === 'wave' || paymentMethod === 'orange') && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                      <div className="flex items-center text-green-800">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-sm font-medium">Paiement mobile confirmé</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <button onClick={handleFakePayment} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors w-full" disabled={loading}>
+                    {loading ? 'Finalisation en cours...' : 'Finaliser l\'inscription'}
+                  </button>
+                  <button type="button" onClick={() => setStep(paymentMethod === 'card' ? 3 : 4)} className="w-full mt-2 text-gray-500 hover:text-gray-900">
+                    Précédent
+                  </button>
+                </div>
+              )}
+            </div>
+            
+            {/* Boutons fixes en bas pour l'étape 4 */}
+            {step === 4 && (paymentMethod === 'wave' || paymentMethod === 'orange') && (
+              <div className="p-6 pt-4 border-t border-gray-200">
                 <div className="flex gap-3">
                   <button 
                     onClick={() => setStep(3)} 
-                    className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                    className="flex-1 bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
                   >
                     Retour
                   </button>
                   <button 
                     onClick={() => setStep(5)} 
-                    className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                    className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors text-lg shadow-lg"
                   >
-                    J'ai payé
+                    ✅ J'ai payé - Finaliser
                   </button>
                 </div>
               </div>
             )}
-
-            {/* Étape 5 : Récapitulatif et paiement */}
-            {step === 5 && (
-              <div>
-                <h2 className="text-xl font-bold mb-4">Récapitulatif</h2>
-                <div className="mb-2"><span className="font-medium">Nom :</span> {form.name}</div>
-                <div className="mb-2"><span className="font-medium">Email :</span> {form.email}</div>
-                <div className="mb-2"><span className="font-medium">Paiement :</span> {paymentMethod === 'card' ? 'Carte bancaire' : paymentMethod === 'wave' ? 'Wave' : 'Orange Money'}</div>
-                {paymentMethod !== 'card' && <div className="mb-2"><span className="font-medium">Téléphone :</span> {form.phone}</div>}
-                {paymentMethod === 'card' && <div className="mb-2"><span className="font-medium">Carte :</span> **** **** **** {form.card.slice(-4)}</div>}
-                <div className="mb-4"><span className="font-medium">Montant :</span> <span className="font-bold">{(course.price * 655).toLocaleString()} CFA</span></div>
-                
-                {(paymentMethod === 'wave' || paymentMethod === 'orange') && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-                    <div className="flex items-center text-green-800">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                      <span className="text-sm font-medium">Paiement mobile confirmé</span>
-                    </div>
-                  </div>
-                )}
-                
-                <button onClick={handleFakePayment} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors w-full" disabled={loading}>
-                  {loading ? 'Finalisation en cours...' : 'Finaliser l\'inscription'}
-                </button>
-                <button type="button" onClick={() => setStep(paymentMethod === 'card' ? 3 : 4)} className="w-full mt-2 text-gray-500 hover:text-gray-900">
-                  Précédent
-                </button>
-              </div>
-            )}
+            
             {/* Fermeture modale */}
             <button onClick={() => setShowPaymentModal(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl">&times;</button>
           </div>
