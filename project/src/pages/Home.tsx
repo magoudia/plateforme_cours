@@ -5,9 +5,11 @@ import { mockCourses } from '../data/mockData';
 import CourseCard from '../components/Course/CourseCard';
 import logo from '../assets/logo.png';
 import pythonsLogo from '../assets/pythons.jpeg';
+import { useNotification } from '../contexts/NotificationContext';
 
 const Home: React.FC = () => {
   const featuredCourses = mockCourses.slice(0, 3);
+  const { addNotification } = useNotification();
 
   return (
     <div className="min-h-screen">
@@ -32,6 +34,9 @@ const Home: React.FC = () => {
               </Link>
               <Link
                 to="/register"
+                onClick={() => {
+                  addNotification({ type: 'success', title: 'Inscription', message: 'Vous vous êtes inscrit avec succès !' });
+                }}
                 className="bg-iai-bordeaux text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-iai-bordeaux transition-colors inline-flex items-center justify-center"
               >
                 Commencer gratuitement

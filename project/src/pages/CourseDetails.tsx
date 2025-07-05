@@ -7,11 +7,13 @@ import pythonsLogo from '../assets/pythons.jpeg';
 import waveLogo from '../assets/wave.jpeg';
 import orangeLogo from '../assets/orange(2).jpeg';
 import visaLogo from '../assets/visa.jpeg';
+import { useNotification } from '../contexts/NotificationContext';
 
 const CourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user, isEnrolled, enrollInCourse } = useAuth();
   const navigate = useNavigate();
+  const { addNotification } = useNotification();
   
   const course = mockCourses.find(c => c.id === id);
   
@@ -29,6 +31,10 @@ const CourseDetails: React.FC = () => {
   }
 
   const isUserEnrolled = isEnrolled(course.id);
+  // Vérification supplémentaire du localStorage pour s'assurer de la cohérence
+  const enrolledFromStorage = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+  const isActuallyEnrolled = enrolledFromStorage.includes(course.id);
+  // Force la mise à jour quand forceUpdate change
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('wave');
@@ -36,6 +42,8 @@ const CourseDetails: React.FC = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+  const [forceUpdate, setForceUpdate] = useState(0);
+  const [showPaymentInstructions, setShowPaymentInstructions] = useState(false);
 
   // Simule l'inscription persistante
   const addCourseToLocalStorage = (courseId: string) => {
@@ -86,6 +94,11 @@ const CourseDetails: React.FC = () => {
       setShowPaymentModal(false);
       addCourseToLocalStorage(course.id);
       setShowToast({ type: 'success', message: 'Paiement réussi ! Vous êtes inscrit à ce cours.' });
+      addNotification({
+        type: 'success',
+        title: 'Inscription réussie',
+        message: `Vous êtes inscrit au cours : ${course.title}`
+      });
       setTimeout(() => {
         setShowToast(null);
         navigate(`/course/${course.id}`);
@@ -96,6 +109,69 @@ const CourseDetails: React.FC = () => {
   // Validation simple
   const isStep2Valid = form.name.trim() && form.email.trim();
   const isStep3Valid = paymentMethod === 'card' ? form.card.trim() : form.phone.trim();
+
+  // Fonction pour vérifier si on doit passer aux instructions de paiement
+  const shouldShowPaymentInstructions = () => {
+    return (paymentMethod === 'wave' || paymentMethod === 'orange') && form.phone.trim().length >= 8;
+  };
+
+  // Fonction pour obtenir les instructions de paiement
+  const getPaymentInstructions = () => {
+    const amount = (course.price * 655).toLocaleString();
+    if (paymentMethod === 'wave') {
+      return {
+        title: 'Paiement Wave',
+        instructions: [
+          `Envoyez ${amount} CFA au numéro : 221 77 123 45 67`,
+          'Ou scannez le QR code Wave ci-dessous',
+          'Attendez la confirmation de paiement',
+          'Cliquez sur "J\'ai payé" une fois le paiement effectué'
+        ],
+        qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=wave://pay?phone=221771234567&amount=' + (course.price * 655)
+      };
+    } else if (paymentMethod === 'orange') {
+      return {
+        title: 'Paiement Orange Money',
+        instructions: [
+          `Envoyez ${amount} CFA au numéro : 221 77 123 45 67`,
+          'Ou utilisez le code USSD : #150*1*221771234567*' + (course.price * 655) + '#',
+          'Attendez la confirmation de paiement',
+          'Cliquez sur "J\'ai payé" une fois le paiement effectué'
+        ],
+        qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=orange://pay?phone=221771234567&amount=' + (course.price * 655)
+      };
+    }
+    return null;
+  };
+
+  // Fonction de désinscription
+  const handleUnenroll = () => {
+    if (!window.confirm('Êtes-vous sûr de vouloir vous désinscrire de ce cours ?')) return;
+    
+    try {
+      const enrolled = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+      const updated = enrolled.filter((id: string) => id !== course.id);
+      localStorage.setItem('enrolledCourses', JSON.stringify(updated));
+      
+      // Force la mise à jour de l'interface
+      setForceUpdate(prev => prev + 1);
+      
+      setShowToast({ type: 'success', message: 'Vous vous êtes désinscrit de ce cours.' });
+      
+      // Pas de notification pour éviter les problèmes de réapparition
+      console.log(`Désinscription réussie du cours : ${course.title}`);
+      
+      setTimeout(() => {
+        setShowToast(null);
+      }, 2000);
+    } catch (error) {
+      console.error('Erreur lors de la désinscription:', error);
+      setShowToast({ type: 'error', message: 'Erreur lors de la désinscription.' });
+      setTimeout(() => {
+        setShowToast(null);
+      }, 2000);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -139,6 +215,14 @@ const CourseDetails: React.FC = () => {
                     {course.description}
                   </p>
                 </div>
+                {isActuallyEnrolled && (
+                  <button
+                    onClick={handleUnenroll}
+                    className="ml-4 px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs font-semibold"
+                  >
+                    Se désinscrire
+                  </button>
+                )}
               </div>
 
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
@@ -169,12 +253,34 @@ const CourseDetails: React.FC = () => {
             {/* Course Content */}
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Contenu du cours</h2>
+              {course.modulesSchedule && course.modulesSchedule.length > 0 && (
+                <div className="overflow-x-auto mb-6">
+                  <table className="min-w-full border text-sm">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="px-4 py-2 border">Dates</th>
+                        <th className="px-4 py-2 border">Module</th>
+                        <th className="px-4 py-2 border">Titre</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {course.modulesSchedule.map((mod, idx) => (
+                        <tr key={idx} className="text-gray-700">
+                          <td className="px-4 py-2 border">{mod.start} - {mod.end}</td>
+                          <td className="px-4 py-2 border font-semibold">{mod.module}</td>
+                          <td className="px-4 py-2 border">{mod.title}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
               <div className="space-y-3">
                 {course.lessons.map((lesson, index) => (
                   <div
                     key={lesson.id}
                     className={`flex items-center justify-between p-3 rounded-lg border ${
-                      isUserEnrolled ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'
+                      isActuallyEnrolled ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
@@ -225,7 +331,7 @@ const CourseDetails: React.FC = () => {
               </div>
 
               {user ? (
-                isUserEnrolled || paymentSuccess ? (
+                isActuallyEnrolled || paymentSuccess ? (
                   <div className="space-y-4">
                     <div className="bg-green-50 text-green-800 p-3 rounded-lg text-center font-medium">
                       ✓ Vous êtes inscrit à ce cours
@@ -236,6 +342,12 @@ const CourseDetails: React.FC = () => {
                     >
                       Continuer le cours
                     </Link>
+                    <button
+                      onClick={handleUnenroll}
+                      className="w-full bg-red-100 text-red-700 py-2 px-4 rounded-lg hover:bg-red-200 transition-colors font-medium text-sm"
+                    >
+                      Se désinscrire
+                    </button>
                   </div>
                 ) : (
                   course.price > 0 ? (
@@ -245,13 +357,13 @@ const CourseDetails: React.FC = () => {
                     >
                       Payer {(course.price * 655).toLocaleString()} CFA et s'inscrire
                     </button>
-                  ) : (
-                    <button
-                      onClick={handleEnroll}
+                ) : (
+                  <button
+                    onClick={handleEnroll}
                       className="w-full bg-iai-blue text-white py-3 px-4 rounded-lg hover:bg-iai-bordeaux transition-colors font-medium"
-                    >
+                  >
                       S'inscrire gratuitement
-                    </button>
+                  </button>
                   )
                 )
               ) : (
@@ -310,7 +422,7 @@ const CourseDetails: React.FC = () => {
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-left relative">
             {/* Progression */}
             <div className="flex items-center mb-6">
-              {[1,2,3,4].map((s) => (
+              {[1,2,3,4,5].map((s) => (
                 <div key={s} className={`flex-1 h-2 mx-1 rounded-full ${step >= s ? 'bg-iai-blue' : 'bg-gray-200'}`}></div>
               ))}
             </div>
@@ -355,7 +467,14 @@ const CourseDetails: React.FC = () => {
             )}
             {/* Étape 3 : Choix paiement */}
             {step === 3 && (
-              <form onSubmit={e => { e.preventDefault(); setStep(4); }}>
+              <form onSubmit={e => { 
+                e.preventDefault(); 
+                if (shouldShowPaymentInstructions()) {
+                  setStep(4);
+                } else {
+                  setStep(5);
+                }
+              }}>
                 <h2 className="text-xl font-bold mb-4">Mode de paiement</h2>
                 <div className="flex gap-4 mb-4">
                   <div
@@ -383,7 +502,16 @@ const CourseDetails: React.FC = () => {
                 {paymentMethod !== 'card' && (
                   <div className="mb-3">
                     <label className="block mb-1 font-medium">Numéro de téléphone</label>
-                    <input type="tel" required className="w-full px-3 py-2 border rounded" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
+                    <input 
+                      type="tel" 
+                      required 
+                      className="w-full px-3 py-2 border rounded" 
+                      value={form.phone} 
+                      onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} 
+                    />
+                    {shouldShowPaymentInstructions() && (
+                      <p className="text-sm text-green-600 mt-1">✓ Numéro valide - Vous serez redirigé vers les instructions de paiement</p>
+                    )}
                   </div>
                 )}
                 {paymentMethod === 'card' && (
@@ -406,12 +534,66 @@ const CourseDetails: React.FC = () => {
                 )}
                 <div className="flex justify-between mt-6">
                   <button type="button" onClick={() => setStep(2)} className="text-gray-500 hover:text-gray-900">Précédent</button>
-                  <button type="submit" disabled={!isStep3Valid} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors disabled:opacity-50">Suivant</button>
+                  <button type="submit" disabled={!isStep3Valid} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors disabled:opacity-50">
+                    {shouldShowPaymentInstructions() ? 'Voir les instructions' : 'Suivant'}
+                  </button>
                 </div>
               </form>
             )}
-            {/* Étape 4 : Récapitulatif et paiement */}
-            {step === 4 && (
+            {/* Étape 4 : Instructions de paiement mobile */}
+            {step === 4 && (paymentMethod === 'wave' || paymentMethod === 'orange') && (
+              <div>
+                <h2 className="text-xl font-bold mb-4 text-center">{getPaymentInstructions()?.title}</h2>
+                
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <div className="text-center mb-4">
+                    <img 
+                      src={getPaymentInstructions()?.qrCode} 
+                      alt="QR Code de paiement" 
+                      className="mx-auto w-48 h-48 border-2 border-gray-300 rounded-lg"
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {getPaymentInstructions()?.instructions.map((instruction, index) => (
+                      <div key={index} className="flex items-start">
+                        <div className="bg-iai-blue text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">
+                          {index + 1}
+                        </div>
+                        <p className="text-gray-700">{instruction}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <h3 className="font-semibold text-blue-900 mb-2">Informations importantes :</h3>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Le paiement doit être effectué depuis le numéro : {form.phone}</li>
+                    <li>• Conservez la confirmation de paiement</li>
+                    <li>• Votre inscription sera validée après confirmation</li>
+                  </ul>
+                </div>
+
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setStep(3)} 
+                    className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                  >
+                    Retour
+                  </button>
+                  <button 
+                    onClick={() => setStep(5)} 
+                    className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                  >
+                    J'ai payé
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Étape 5 : Récapitulatif et paiement */}
+            {step === 5 && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Récapitulatif</h2>
                 <div className="mb-2"><span className="font-medium">Nom :</span> {form.name}</div>
@@ -420,10 +602,20 @@ const CourseDetails: React.FC = () => {
                 {paymentMethod !== 'card' && <div className="mb-2"><span className="font-medium">Téléphone :</span> {form.phone}</div>}
                 {paymentMethod === 'card' && <div className="mb-2"><span className="font-medium">Carte :</span> **** **** **** {form.card.slice(-4)}</div>}
                 <div className="mb-4"><span className="font-medium">Montant :</span> <span className="font-bold">{(course.price * 655).toLocaleString()} CFA</span></div>
+                
+                {(paymentMethod === 'wave' || paymentMethod === 'orange') && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                    <div className="flex items-center text-green-800">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                      <span className="text-sm font-medium">Paiement mobile confirmé</span>
+                    </div>
+                  </div>
+                )}
+                
                 <button onClick={handleFakePayment} className="bg-iai-blue text-white px-6 py-2 rounded-lg font-semibold hover:bg-iai-bordeaux transition-colors w-full" disabled={loading}>
-                  {loading ? 'Paiement en cours...' : 'Payer et s\'inscrire'}
+                  {loading ? 'Finalisation en cours...' : 'Finaliser l\'inscription'}
                 </button>
-                <button type="button" onClick={() => setStep(3)} className="w-full mt-2 text-gray-500 hover:text-gray-900">
+                <button type="button" onClick={() => setStep(paymentMethod === 'card' ? 3 : 4)} className="w-full mt-2 text-gray-500 hover:text-gray-900">
                   Précédent
                 </button>
               </div>

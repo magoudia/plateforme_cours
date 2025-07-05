@@ -3,12 +3,17 @@ import { Link } from 'react-router-dom';
 import { BookOpen, Clock, Award, TrendingUp, Play, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { mockCourses } from '../data/mockData';
+import { useState } from 'react';
+import { useNotification } from '../contexts/NotificationContext';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
 
   // Récupère les cours inscrits depuis localStorage (simulation front)
   const localEnrolled = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+
+  const [_, forceUpdate] = useState(0);
+  const { addNotification } = useNotification();
 
   if (!user) {
     return null;
@@ -28,6 +33,120 @@ const Dashboard: React.FC = () => {
   const recommendedCourses = mockCourses
     .filter(course => !user.enrolledCourses.includes(course.id))
     .slice(0, 3);
+
+  // Fonction de désinscription
+  const handleUnenroll = (courseId: string, courseTitle: string) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir vous désinscrire de ce cours ?')) return;
+    
+    try {
+      // Debug : afficher le contenu actuel
+      const enrolled = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+      console.log('Cours inscrits avant suppression:', enrolled);
+      console.log('Tentative de suppression du cours ID:', courseId);
+      
+      const updated = enrolled.filter((id: string) => id !== courseId);
+      console.log('Cours inscrits après suppression:', updated);
+      
+      localStorage.setItem('enrolledCourses', JSON.stringify(updated));
+      
+      // Force la mise à jour de l'interface sans recharger la page
+      forceUpdate(x => x + 1);
+      
+      // Pas de notification pour éviter les problèmes de réapparition
+      console.log(`Désinscription réussie du cours : ${courseTitle}`);
+      
+      // Recharger la page après un délai pour s'assurer de la cohérence
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Erreur lors de la désinscription:', error);
+      addNotification({ 
+        type: 'error', 
+        title: 'Erreur', 
+        message: 'Erreur lors de la désinscription du cours.' 
+      });
+    }
+  };
+
+  // Fonction pour supprimer tous les cours - VERSION FORCÉE
+  const handleUnenrollAll = () => {
+    if (!window.confirm('SUPPRESSION FORCÉE : Êtes-vous sûr de vouloir supprimer TOUS les cours ? Cette action est irréversible.')) return;
+    
+    try {
+      console.log('=== SUPPRESSION FORCÉE DE TOUS LES COURS ===');
+      
+      // 1. Supprimer complètement la clé enrolledCourses
+      localStorage.removeItem('enrolledCourses');
+      console.log('✓ Clé enrolledCourses supprimée');
+      
+      // 2. Supprimer aussi user.enrolledCourses si elle existe
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      if (userData.enrolledCourses) {
+        delete userData.enrolledCourses;
+        localStorage.setItem('user', JSON.stringify(userData));
+        console.log('✓ user.enrolledCourses supprimé');
+      }
+      
+      // 3. Supprimer toutes les clés qui pourraient contenir des cours
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('course') || key.includes('enrolled') || key.includes('enrollment'))) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        console.log(`✓ Clé ${key} supprimée`);
+      });
+      
+      // 4. Forcer la mise à jour de l'interface
+      forceUpdate(x => x + 1);
+      
+      console.log('=== SUPPRESSION TERMINÉE ===');
+      
+      // 5. Recharger la page immédiatement
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Erreur lors de la suppression forcée:', error);
+      // En cas d'erreur, forcer quand même le rechargement
+      window.location.reload();
+    }
+  };
+
+  // Fonction de debug pour vérifier le localStorage
+  const debugLocalStorage = () => {
+    const enrolled = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+    console.log('=== DEBUG LOCALSTORAGE ===');
+    console.log('Cours inscrits:', enrolled);
+    console.log('Nombre de cours:', enrolled.length);
+    console.log('Type de données:', typeof enrolled);
+    console.log('=======================');
+  };
+
+  // Fonction de suppression nucléaire - VIDE TOUT LE LOCALSTORAGE
+  const nuclearClear = () => {
+    if (!window.confirm('SUPPRESSION NUCLÉAIRE : Voulez-vous vraiment vider TOUT le localStorage ? Cela supprimera toutes les données (cours, notifications, etc.)')) return;
+    
+    try {
+      console.log('=== SUPPRESSION NUCLÉAIRE ===');
+      
+      // Vider complètement le localStorage
+      localStorage.clear();
+      console.log('✓ localStorage complètement vidé');
+      
+      // Recharger immédiatement
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Erreur lors de la suppression nucléaire:', error);
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -107,12 +226,37 @@ const Dashboard: React.FC = () => {
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">Mes cours</h2>
+                <div className="flex items-center gap-4">
+                  {enrolledCourses.length > 0 && (
+                    <button
+                      onClick={handleUnenrollAll}
+                      className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      title="Supprimer tous les cours"
+                    >
+                      Tout supprimer
+                    </button>
+                  )}
+                  <button
+                    onClick={debugLocalStorage}
+                    className="text-gray-600 hover:text-gray-800 text-sm font-medium"
+                    title="Debug localStorage"
+                  >
+                    Debug
+                  </button>
+                  <button
+                    onClick={nuclearClear}
+                    className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-300 px-2 py-1 rounded bg-red-50"
+                    title="Vider le localStorage"
+                  >
+                    🗑️ Vider tout
+                  </button>
                 <Link
                   to="/courses"
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                 >
                   Voir tout
                 </Link>
+                </div>
               </div>
             </div>
             
@@ -120,11 +264,8 @@ const Dashboard: React.FC = () => {
               {enrolledCourses.length > 0 ? (
                 <div className="space-y-4">
                   {recentCourses.map((course) => (
-                    <Link
-                      key={course.id}
-                      to={`/course/${course.id}`}
-                      className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
+                    <div key={course.id} className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                      <Link to={`/course/${course.id}`} className="flex items-center flex-1">
                       <img
                         src={course.imageUrl}
                         alt={course.title}
@@ -147,6 +288,14 @@ const Dashboard: React.FC = () => {
                       </div>
                       <Play className="h-5 w-5 text-blue-600" />
                     </Link>
+                      <button
+                        onClick={() => handleUnenroll(course.id, course.title)}
+                        className="ml-4 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 text-sm font-semibold transition-colors"
+                        title="Se désinscrire de ce cours"
+                      >
+                        Se désinscrire
+                      </button>
+                    </div>
                   ))}
                 </div>
               ) : (

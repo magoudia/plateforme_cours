@@ -5,6 +5,13 @@ export interface User {
   enrolledCourses: string[];
 }
 
+export interface ModuleSchedule {
+  start: string; // ex: '1 avril'
+  end: string;   // ex: '12 avril'
+  module: string; // ex: 'Module 1'
+  title: string;  // ex: 'Introduction à React'
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -19,6 +26,7 @@ export interface Course {
   imageUrl: string;
   lessons: Lesson[];
   isPremium: boolean;
+  modulesSchedule?: ModuleSchedule[];
 }
 
 export interface Lesson {

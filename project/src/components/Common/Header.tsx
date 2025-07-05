@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, LogOut, Menu, X, BookOpen, ArrowRight } from 'lucide-react';
+import { User, LogOut, Menu, X, BookOpen, ArrowRight, Bell } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotification } from '../../contexts/NotificationContext';
 import logo from '../../assets/logo.png';
 import waveLogo from '../assets/wave.jpeg';
 import orangeLogo from '../assets/orange.jpeg'; // ou orange2.jpeg selon ton choix
 import visaLogo from '../assets/visa.jpeg';
+import ProtectedRoute from './components/Common/ProtectedRoute';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { notifications } = useNotification();
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleLogout = () => {
     logout();
@@ -45,8 +49,8 @@ const Header: React.FC = () => {
             >
               Accueil
             </Link>
-            <Link
-              to="/courses"
+            <Link 
+              to="/courses" 
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
               Catalogue
@@ -57,6 +61,14 @@ const Header: React.FC = () => {
                 className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
               >
                 Tableau de bord
+              </Link>
+            )}
+            {user && (
+              <Link to="/notifications" className="relative flex items-center group">
+                <Bell className="h-6 w-6 text-iai-blue group-hover:text-iai-bordeaux transition-colors" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 font-bold animate-pulse">{unreadCount}</span>
+                )}
               </Link>
             )}
           </nav>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Header from './components/Common/Header';
 import Footer from './components/Common/Footer';
 import ProtectedRoute from './components/Common/ProtectedRoute';
@@ -10,14 +11,15 @@ import CourseDetails from './pages/CourseDetails';
 import Dashboard from './pages/Dashboard';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import Notifications from './pages/Notifications';
 
 function App() {
   return (
-    <AuthProvider>
+    <NotificationProvider>
       <Router>
-        <div className="min-h-screen flex flex-col">
+        <AuthProvider>
           <Header />
-          <main className="flex-1">
+          <main className="pt-16 min-h-screen bg-gray-50">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/courses" element={<CourseCatalog />} />
@@ -32,12 +34,20 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/notifications"
+                element={
+                  <ProtectedRoute>
+                    <Notifications />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </main>
           <Footer />
-        </div>
+        </AuthProvider>
       </Router>
-    </AuthProvider>
+    </NotificationProvider>
   );
 }
 

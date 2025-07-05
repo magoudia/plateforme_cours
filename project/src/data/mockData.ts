@@ -19,6 +19,11 @@ export const mockCourses: Course[] = [
       { id: '1-2', title: 'Configuration TypeScript', duration: '20min', type: 'video' },
       { id: '1-3', title: 'Composants et Props', duration: '25min', type: 'video' },
       { id: '1-4', title: 'Quiz - Bases de React', duration: '10min', type: 'quiz' },
+    ],
+    modulesSchedule: [
+      { start: '1 avril', end: '12 avril', module: 'Module 1', title: 'Introduction à React' },
+      { start: '12 avril', end: '20 avril', module: 'Module 2', title: 'Composants et Props' },
+      { start: '20 avril', end: '30 avril', module: 'Module 3', title: 'Hooks et Avancés' }
     ]
   },
   {
@@ -38,6 +43,11 @@ export const mockCourses: Course[] = [
       { id: '2-1', title: 'Interface Figma', duration: '12min', type: 'video' },
       { id: '2-2', title: 'Outils de base', duration: '18min', type: 'video' },
       { id: '2-3', title: 'Créer un wireframe', duration: '30min', type: 'video' },
+    ],
+    modulesSchedule: [
+      { start: '1 avril', end: '8 avril', module: 'Module 1', title: 'Découverte de Figma' },
+      { start: '8 avril', end: '15 avril', module: 'Module 2', title: 'Outils et Techniques' },
+      { start: '15 avril', end: '22 avril', module: 'Module 3', title: 'Projets Pratiques' }
     ]
   },
   {
@@ -57,6 +67,12 @@ export const mockCourses: Course[] = [
       { id: '3-1', title: 'Installation Python', duration: '10min', type: 'video' },
       { id: '3-2', title: 'Variables et types', duration: '20min', type: 'video' },
       { id: '3-3', title: 'Structures conditionnelles', duration: '25min', type: 'video' },
+    ],
+    modulesSchedule: [
+      { start: '1 avril', end: '10 avril', module: 'Module 1', title: 'Introduction à Python' },
+      { start: '10 avril', end: '20 avril', module: 'Module 2', title: 'Variables et Types' },
+      { start: '20 avril', end: '30 avril', module: 'Module 3', title: 'Structures de Contrôle' },
+      { start: '1 mai', end: '10 mai', module: 'Module 4', title: 'Fonctions et Modules' }
     ]
   },
   {
@@ -76,6 +92,12 @@ export const mockCourses: Course[] = [
       { id: '4-1', title: 'Stratégie SEO avancée', duration: '45min', type: 'video' },
       { id: '4-2', title: 'Publicité Facebook', duration: '35min', type: 'video' },
       { id: '4-3', title: 'Analytics et métriques', duration: '40min', type: 'video' },
+    ],
+    modulesSchedule: [
+      { start: '1 avril', end: '8 avril', module: 'Module 1', title: 'SEO Avancé' },
+      { start: '8 avril', end: '15 avril', module: 'Module 2', title: 'Publicité Social Media' },
+      { start: '15 avril', end: '22 avril', module: 'Module 3', title: 'Analytics et ROI' },
+      { start: '22 avril', end: '30 avril', module: 'Module 4', title: 'Stratégies Intégrées' }
     ]
   },
   {
@@ -95,6 +117,11 @@ export const mockCourses: Course[] = [
       { id: '5-1', title: 'Réglages de base', duration: '15min', type: 'video' },
       { id: '5-2', title: 'Composition', duration: '20min', type: 'video' },
       { id: '5-3', title: 'Retouche Lightroom', duration: '30min', type: 'video' },
+    ],
+    modulesSchedule: [
+      { start: '1 avril', end: '8 avril', module: 'Module 1', title: 'Fondamentaux Photo' },
+      { start: '8 avril', end: '15 avril', module: 'Module 2', title: 'Composition et Cadrage' },
+      { start: '15 avril', end: '22 avril', module: 'Module 3', title: 'Retouche et Post-traitement' }
     ]
   },
   {
@@ -114,6 +141,11 @@ export const mockCourses: Course[] = [
       { id: '6-1', title: 'Principes Agile', duration: '25min', type: 'video' },
       { id: '6-2', title: 'Scrum Framework', duration: '30min', type: 'video' },
       { id: '6-3', title: 'Outils de gestion', duration: '20min', type: 'video' },
+    ],
+    modulesSchedule: [
+      { start: '1 avril', end: '10 avril', module: 'Module 1', title: 'Principes Agile' },
+      { start: '10 avril', end: '20 avril', module: 'Module 2', title: 'Scrum Framework' },
+      { start: '20 avril', end: '30 avril', module: 'Module 3', title: 'Outils et Pratiques' }
     ]
   }
 ];
