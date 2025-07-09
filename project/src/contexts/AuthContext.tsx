@@ -80,13 +80,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return user ? user.enrolledCourses.includes(courseId) : false;
   };
 
+  const unenrollFromCourse = (courseId: string) => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        enrolledCourses: user.enrolledCourses.filter(id => id !== courseId)
+      };
+      setUser(updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      
+      // Mise à jour dans le localStorage des utilisateurs
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const userIndex = users.findIndex((u: User) => u.id === user.id);
+      if (userIndex !== -1) {
+        users[userIndex] = updatedUser;
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+    }
+  };
+
   const value: AuthContextType = {
     user,
     login,
     register,
     logout,
     enrollInCourse,
-    isEnrolled
+    isEnrolled,
+    unenrollFromCourse
   };
 
   return (

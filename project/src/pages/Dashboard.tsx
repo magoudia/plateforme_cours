@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { mockCourses } from '../data/mockData';
 import { useState } from 'react';
 import { useNotification } from '../contexts/NotificationContext';
+import { useProgress } from '../contexts/ProgressContext';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ const Dashboard: React.FC = () => {
 
   const [_, forceUpdate] = useState(0);
   const { addNotification } = useNotification();
+  const { getCourseProgress } = useProgress();
 
   if (!user) {
     return null;
@@ -33,6 +35,26 @@ const Dashboard: React.FC = () => {
   const recommendedCourses = mockCourses
     .filter(course => !user.enrolledCourses.includes(course.id))
     .slice(0, 3);
+
+  const getCourseCompletion = (course) => {
+    const progress = getCourseProgress(course.id);
+    if (!progress || !Array.isArray(progress.completedLessons)) return 0;
+    // Filtrer les doublons et les ids invalides
+    const uniqueCompleted = Array.from(new Set(progress.completedLessons)).filter(id =>
+      course.modules.flatMap(m => m.lessons).some(lesson => lesson.id === id)
+    );
+    const totalLessons = course.modules.flatMap(m => m.lessons).length;
+    if (totalLessons === 0) return 0;
+    const percent = Math.round((uniqueCompleted.length / totalLessons) * 100);
+    // Clamp entre 0 et 100
+    return Math.max(0, Math.min(percent, 100));
+  };
+
+  const getGlobalProgression = () => {
+    if (enrolledCourses.length === 0) return 0;
+    const totalPercent = enrolledCourses.reduce((acc, course) => acc + getCourseCompletion(course), 0);
+    return Math.round(totalPercent / enrolledCourses.length);
+  };
 
   // Fonction de désinscription
   const handleUnenroll = (courseId: string, courseTitle: string) => {
@@ -212,7 +234,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="ml-4">
                 <h3 className="text-2xl font-bold text-gray-900">
-                  {enrolledCourses.length > 0 ? Math.floor((enrolledCourses.length * 0.6 / enrolledCourses.length) * 100) : 0}%
+                  {getGlobalProgression()}%
                 </h3>
                 <p className="text-gray-600">Progression</p>
               </div>
@@ -278,11 +300,11 @@ const Dashboard: React.FC = () => {
                           <div className="flex-1 bg-gray-200 rounded-full h-2">
                             <div
                               className="bg-blue-600 h-2 rounded-full"
-                              style={{ width: `${Math.random() * 100}%` }}
+                              style={{ width: `${getCourseCompletion(course)}%` }}
                             ></div>
                           </div>
                           <span className="ml-2 text-xs text-gray-500">
-                            {Math.floor(Math.random() * 100)}%
+                            {getCourseCompletion(course)}%
                           </span>
                         </div>
                       </div>

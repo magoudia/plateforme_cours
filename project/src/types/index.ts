@@ -12,6 +12,53 @@ export interface ModuleSchedule {
   title: string;  // ex: 'Introduction à React'
 }
 
+export interface Module {
+  id: string;
+  title: string;
+  description: string;
+  order: number;
+  lessons: Lesson[];
+  isCompleted?: boolean;
+  progress?: number; // 0-100
+}
+
+export interface Lesson {
+  id: string;
+  title: string;
+  description?: string;
+  duration: string;
+  type: 'video' | 'text' | 'quiz' | 'document' | 'exercise';
+  content?: string; // URL de la vidéo ou contenu texte
+  isCompleted?: boolean;
+  isLocked?: boolean; // Pour les leçons qui nécessitent de compléter les précédentes
+  resources?: Resource[];
+  quiz?: Quiz;
+}
+
+export interface Resource {
+  id: string;
+  title: string;
+  type: 'pdf' | 'doc' | 'video' | 'link';
+  url: string;
+  size?: string;
+}
+
+export interface Quiz {
+  id: string;
+  questions: Question[];
+  passingScore: number;
+  timeLimit?: number; // en minutes
+}
+
+export interface Question {
+  id: string;
+  text: string;
+  type: 'multiple-choice' | 'true-false' | 'text';
+  options?: string[];
+  correctAnswer: string | string[];
+  explanation?: string;
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -25,16 +72,22 @@ export interface Course {
   studentsCount: number;
   imageUrl: string;
   lessons: Lesson[];
+  modules: Module[];
   isPremium: boolean;
   modulesSchedule?: ModuleSchedule[];
+  totalModules: number;
+  totalLessons: number;
+  certificate?: boolean;
 }
 
-export interface Lesson {
-  id: string;
-  title: string;
-  duration: string;
-  type: 'video' | 'text' | 'quiz';
-  isCompleted?: boolean;
+export interface UserProgress {
+  courseId: string;
+  completedLessons: string[];
+  completedModules: string[];
+  currentLesson?: string;
+  progress: number; // 0-100
+  lastAccessed: string;
+  quizScores: Record<string, number>; // lessonId -> score
 }
 
 export interface AuthContextType {
@@ -44,4 +97,5 @@ export interface AuthContextType {
   logout: () => void;
   enrollInCourse: (courseId: string) => void;
   isEnrolled: (courseId: string) => boolean;
+  unenrollFromCourse: (courseId: string) => void;
 }

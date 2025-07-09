@@ -7,9 +7,12 @@ import logo from '../assets/logo.png';
 import pythonsLogo from '../assets/pythons.jpeg';
 import { useNotification } from '../contexts/NotificationContext';
 
+
 const Home: React.FC = () => {
   const featuredCourses = mockCourses.slice(0, 3);
   const { addNotification } = useNotification();
+
+
 
   return (
     <div className="min-h-screen">
@@ -41,6 +44,7 @@ const Home: React.FC = () => {
               >
                 Commencer gratuitement
               </Link>
+
             </div>
           </div>
         </div>

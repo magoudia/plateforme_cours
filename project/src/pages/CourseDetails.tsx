@@ -11,7 +11,7 @@ import { useNotification } from '../contexts/NotificationContext';
 
 const CourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user, isEnrolled, enrollInCourse } = useAuth();
+  const { user, isEnrolled, enrollInCourse, unenrollFromCourse } = useAuth();
   const navigate = useNavigate();
   const { addNotification } = useNotification();
   
@@ -31,9 +31,8 @@ const CourseDetails: React.FC = () => {
   }
 
   const isUserEnrolled = isEnrolled(course.id);
-  // Vérification supplémentaire du localStorage pour s'assurer de la cohérence
-  const enrolledFromStorage = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
-  const isActuallyEnrolled = enrolledFromStorage.includes(course.id);
+  // Utilise uniquement le contexte d'authentification pour la cohérence
+  const isActuallyEnrolled = isUserEnrolled;
   // Force la mise à jour quand forceUpdate change
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -45,13 +44,9 @@ const CourseDetails: React.FC = () => {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [showPaymentInstructions, setShowPaymentInstructions] = useState(false);
 
-  // Simule l'inscription persistante
+  // Utilise le contexte d'authentification pour l'inscription
   const addCourseToLocalStorage = (courseId: string) => {
-    const enrolled = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
-    if (!enrolled.includes(courseId)) {
-      enrolled.push(courseId);
-      localStorage.setItem('enrolledCourses', JSON.stringify(enrolled));
-    }
+    enrollInCourse(courseId);
   };
 
   const getLevelBadgeColor = (level: string) => {
@@ -149,17 +144,12 @@ const CourseDetails: React.FC = () => {
     if (!window.confirm('Êtes-vous sûr de vouloir vous désinscrire de ce cours ?')) return;
     
     try {
-      const enrolled = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
-      const updated = enrolled.filter((id: string) => id !== course.id);
-      localStorage.setItem('enrolledCourses', JSON.stringify(updated));
+      unenrollFromCourse(course.id);
       
       // Force la mise à jour de l'interface
       setForceUpdate(prev => prev + 1);
       
       setShowToast({ type: 'success', message: 'Vous vous êtes désinscrit de ce cours.' });
-      
-      // Pas de notification pour éviter les problèmes de réapparition
-      console.log(`Désinscription réussie du cours : ${course.title}`);
       
       setTimeout(() => {
         setShowToast(null);
@@ -252,7 +242,14 @@ const CourseDetails: React.FC = () => {
 
             {/* Course Content */}
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Contenu du cours</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Contenu du cours</h2>
+                {isActuallyEnrolled && (
+                  <span className="text-sm text-blue-600 font-medium">
+                    Cliquez sur une leçon pour commencer l'apprentissage
+                  </span>
+                )}
+              </div>
               {course.modulesSchedule && course.modulesSchedule.length > 0 && (
                 <div className="overflow-x-auto mb-6">
                   <table className="min-w-full border text-sm">
@@ -282,6 +279,11 @@ const CourseDetails: React.FC = () => {
                     className={`flex items-center justify-between p-3 rounded-lg border ${
                       isActuallyEnrolled ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'
                     }`}
+                    onClick={() => {
+                      if (isActuallyEnrolled) {
+                        navigate(`/course/${course.id}/learn`);
+                      }
+                    }}
                   >
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full text-sm font-medium">
@@ -295,7 +297,16 @@ const CourseDetails: React.FC = () => {
                         <p className="text-sm text-gray-600 capitalize">{lesson.type}</p>
                       </div>
                     </div>
-                    <span className="text-sm text-gray-500">{lesson.duration}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-500">{lesson.duration}</span>
+                      {isActuallyEnrolled && (
+                        <span className="text-blue-600">
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -337,10 +348,10 @@ const CourseDetails: React.FC = () => {
                       ✓ Vous êtes inscrit à ce cours
                     </div>
                     <Link
-                      to="/dashboard"
+                      to={`/course/${course.id}/learn`}
                       className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center block"
                     >
-                      Continuer le cours
+                      Commencer le cours
                     </Link>
                     <button
                       onClick={handleUnenroll}
