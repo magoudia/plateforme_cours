@@ -112,7 +112,7 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
           <div className="prose max-w-none">
             <div 
               className="text-gray-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: (courseContent as any)[lesson.id]?.content || lesson.content || 'Contenu non disponible' }}
+              dangerouslySetInnerHTML={{ __html: lesson.content || (courseContent as any)[lesson.id]?.content || 'Contenu non disponible' }}
             />
           </div>
         );

@@ -191,53 +191,60 @@ export const mockCourses: Course[] = [
               passingScore: 80,
               timeLimit: 15
             }
-          }
-        ]
-      },
-      {
-        id: 'module-4',
-        title: 'TypeScript avec React',
-        description: 'Intégrez TypeScript dans vos projets React',
-        order: 4,
-        lessons: [
-          {
-            id: '4-1',
-            title: 'Configuration TypeScript',
-            description: 'Mise en place de TypeScript dans un projet React',
-            duration: '25min',
-            type: 'text',
-            content: 'text'
           },
           {
-            id: '4-2',
-            title: 'Types pour les props',
-            description: 'Définition des types pour les props des composants',
-            duration: '30min',
-            type: 'text',
-            content: 'text'
-          },
-          {
-            id: '4-3',
-            title: 'Projet final',
-            description: 'Création d\'une application complète avec React et TypeScript',
-            duration: '60min',
-            type: 'exercise',
-            resources: [
-              {
-                id: 'res-4-3-1',
-                title: 'Spécifications du projet',
-                type: 'pdf',
-                url: '#',
-                size: '150 KB'
-              },
-              {
-                id: 'res-4-3-2',
-                title: 'Assets du projet',
-                type: 'doc',
-                url: '#',
-                size: '2.1 MB'
-              }
-            ]
+            id: '3-5',
+            title: 'Quiz - Python : Variables, Contrôle & Fonctions',
+            description: 'Testez vos connaissances sur les bases de Python',
+            duration: '15min',
+            type: 'quiz',
+            quiz: {
+              id: 'quiz-3-5',
+              questions: [
+                {
+                  id: 'q1',
+                  text: 'Quel est le type de x = 5 ?',
+                  type: 'multiple-choice',
+                  options: ['str', 'int', 'float', 'bool'],
+                  correctAnswer: 'int',
+                  explanation: 'int est le type des nombres entiers.'
+                },
+                {
+                  id: 'q2',
+                  text: 'Comment convertir "12.5" en float ?',
+                  type: 'multiple-choice',
+                  options: ['float("12,5") (virgule invalide)', 'float("12.5")', 'str_to_float("12.5") (n\'existe pas)'],
+                  correctAnswer: 'float("12.5")',
+                  explanation: 'Utilisez float() avec un point décimal.'
+                },
+                {
+                  id: 'q3',
+                  text: 'Que fait ce code ?\n\nfor i in range(3):\n    print(i)',
+                  type: 'multiple-choice',
+                  options: ['Affiche 0 1 2', 'Affiche 1 2 3', 'Boucle infinie'],
+                  correctAnswer: 'Affiche 0 1 2',
+                  explanation: 'range(3) génère 0, 1, 2.'
+                },
+                {
+                  id: 'q4',
+                  text: 'Quel mot-clé arrête une boucle immédiatement ?',
+                  type: 'multiple-choice',
+                  options: ['stop', 'break', 'exit'],
+                  correctAnswer: 'break',
+                  explanation: 'break permet d\'arrêter une boucle immédiatement.'
+                },
+                {
+                  id: 'q5',
+                  text: 'Quelle fonction calcule le carré d\'un nombre ?\n\ndef carre(n):\n    return n ** 2\n\ncarre(4) → ?',
+                  type: 'multiple-choice',
+                  options: ['carre(4) → 16', 'carre(4) → 8', 'carre(4) → 44'],
+                  correctAnswer: 'carre(4) → 16',
+                  explanation: 'carre(4) retourne 16 car 4 ** 2 = 16.'
+                }
+              ],
+              passingScore: 70,
+              timeLimit: 15
+            }
           }
         ]
       }
@@ -328,7 +335,7 @@ export const mockCourses: Course[] = [
     lessons: [
       { id: '3-1', title: 'Installation Python', duration: '10min', type: 'video' },
       { id: '3-2', title: 'Variables et types', duration: '20min', type: 'video' },
-      { id: '3-3', title: 'Structures conditionnelles', duration: '25min', type: 'video' },
+      { id: '3-3', title: 'Structures conditionnelles', duration: '25min', type: 'video' }
     ],
     modules: [
       {
@@ -402,7 +409,81 @@ message = "Python" + " " + "Génial"  # Concatenation
             description: 'Déclaration et utilisation des variables',
             duration: '20min',
             type: 'text',
-            content: 'text'
+            content: `
+<h2>1. Qu'est-ce qu'une Variable ?</h2>
+<p>Une variable est une boîte pour stocker des données. En Python, on crée une variable simplement en lui donnant un nom et une valeur.</p>
+<pre><code class="language-python"># Exemple
+nom = "Alice"
+age = 25
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/XfxqOhAL8NI" target="_blank" rel="noopener noreferrer">📹 Vidéo Explicative (3 min)</a>
+</div>
+
+<h2>2. Types de Données de Base</h2>
+<table>
+  <thead>
+    <tr><th>Type</th><th>Exemple</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>int</td><td>42</td><td>Nombre entier</td></tr>
+    <tr><td>float</td><td>3.14</td><td>Nombre décimal</td></tr>
+    <tr><td>str</td><td>"Bonjour"</td><td>Chaîne de caractères</td></tr>
+    <tr><td>bool</td><td>True/False</td><td>Booléen</td></tr>
+    <tr><td>list</td><td>[1, 2, 3]</td><td>Liste</td></tr>
+  </tbody>
+</table>
+<pre><code class="language-python"># Exemples concrets
+prix = 19.99          # float
+est_valide = True     # bool
+langages = ["Python", "Java", "C++"]  # list
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/vKqVnr0BEJQ" target="_blank" rel="noopener noreferrer">📹 Tutoriel Complet sur les Types (8 min)</a>
+</div>
+
+<h2>3. Vérifier le Type</h2>
+<p>Utilisez <code>type()</code> pour connaître le type d'une variable :</p>
+<pre><code class="language-python">print(type(age))      # Affiche <class 'int'>
+print(type(nom))      # Affiche <class 'str'>
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/XKHEtdqhLK8" target="_blank" rel="noopener noreferrer">📹 Astuce Pratique (2 min)</a>
+</div>
+
+<h2>4. Conversion de Types</h2>
+<p>Convertir un type en un autre avec :</p>
+<ul>
+  <li><code>int()</code> → Entier</li>
+  <li><code>str()</code> → Chaîne</li>
+  <li><code>float()</code> → Décimal</li>
+</ul>
+<pre><code class="language-python">nombre = "10"
+nombre_entier = int(nombre)  # Convertit en int
+print(nombre_entier * 2)     # Affiche 20
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/ve2pmm5JqmI" target="_blank" rel="noopener noreferrer">📹 Conversions Expliquées (5 min)</a>
+</div>
+
+<h2>5. Exercice Pratique</h2>
+<p><strong>Énoncé :</strong> Créez un programme qui demande à l'utilisateur son âge et affiche "Majeur" si l'âge ≥ 18.</p>
+<pre><code class="language-python">age = int(input("Quel est votre âge ? "))  # Conversion en int
+if age >= 18:
+    print("Majeur")
+else:
+    print("Mineur")
+</code></pre>
+<div style="margin:1em 0;">
+  <span>📹 Corrigé en Vidéo (7 min)</span>
+</div>
+
+<h2>Ressources Supplémentaires</h2>
+<ul>
+  <li>🎓 Cours Complet sur les Variables (30 min)</li>
+  <li>💡 Erreurs Courantes & Solutions</li>
+</ul>
+`
           },
           {
             id: '3-3',
@@ -410,7 +491,83 @@ message = "Python" + " " + "Génial"  # Concatenation
             description: 'Utilisation des if, elif, else',
             duration: '25min',
             type: 'text',
-            content: 'text'
+            content: `
+<h2>1. Conditions : if / elif / else</h2>
+<p>Permettent d'exécuter du code seulement si une condition est vraie.</p>
+<pre><code class="language-python">âge = int(input("Quel est votre âge ? "))
+
+if âge >= 18:
+    print("Accès autorisé")
+elif âge >= 16:
+    print("Accès avec supervision")
+else:
+    print("Accès refusé")
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/SiECEKZDqqk" target="_blank" rel="noopener noreferrer">📹 Vidéo Explicative (Conditions) - 6 min</a>
+</div>
+
+<h2>2. Boucles : for</h2>
+<p>Pour répéter une action sur une séquence (liste, chaîne, etc.).</p>
+<pre><code class="language-python"># Afficher chaque lettre d'un mot
+for lettre in "Python":
+    print(lettre)
+
+# Compter de 1 à 5
+for i in range(1, 6):
+    print(i)
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/4AY3YiduC14" target="_blank" rel="noopener noreferrer">📹 Tutoriel Boucle for - 8 min</a>
+</div>
+
+<h2>3. Boucles : while</h2>
+<p>Exécute du code tant qu'une condition est vraie.</p>
+<pre><code class="language-python">compteur = 0
+while compteur < 3:
+    print("Chargement...")
+    compteur += 1  # Ne pas oublier pour éviter une boucle infinie !
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/J8dkgM8Mck0" target="_blank" rel="noopener noreferrer">📹 Guide Boucle while - 5 min</a>
+</div>
+
+<h2>4. Mots-clés Utiles</h2>
+<p><code>break</code> : Sort immédiatement de la boucle.<br/>
+<code>continue</code> : Passe à l'itération suivante.</p>
+<pre><code class="language-python"># Exemple avec break
+for num in range(10):
+    if num == 5:
+        break  # Arrête à 5
+    print(num)
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/JXk_XtuP3-E" target="_blank" rel="noopener noreferrer">📹 Astuces break & continue - 4 min</a>
+</div>
+
+<h2>5. Exercice Pratique</h2>
+<p><strong>Énoncé :</strong> Créez un mini-jeu où l'ordinateur choisit un nombre entre 1 et 10, et l'utilisateur doit le deviner.</p>
+<pre><code class="language-python">import random
+
+nombre_secret = random.randint(1, 10)
+essais = 0
+
+while True:
+    essai = int(input("Devinez le nombre (1-10) : "))
+    essais += 1
+    
+    if essai == nombre_secret:
+        print(f"Bravo ! Trouvé en {essais} essais.")
+        break
+    elif essai < nombre_secret:
+        print("Trop petit.")
+    else:
+        print("Trop grand.")
+</code></pre>
+<div style="margin:1em 0;">
+  <a href="https://youtu.be/8ext9G7xspg" target="_blank" rel="noopener noreferrer">📹 Corrigé en Vidéo - 10 min</a>
+</div>
+`
           }
         ]
       }

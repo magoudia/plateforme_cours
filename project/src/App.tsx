@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Notifications from './pages/Notifications';
+import QuizPythonInteractif from './pages/QuizPythonInteractif';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/quiz-python-interactif" element={<QuizPythonInteractif />} />
               </Routes>
             </main>
             <Footer />

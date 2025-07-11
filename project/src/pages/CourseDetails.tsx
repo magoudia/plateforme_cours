@@ -309,6 +309,15 @@ const CourseDetails: React.FC = () => {
                     </div>
                   </div>
                 ))}
+                {/* Ajout du bouton pour le quiz interactif, uniquement pour le cours Python */}
+                {course.id === '3' && (
+                  <button
+                    onClick={() => navigate('/quiz-python-interactif')}
+                    className="mt-6 w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Accéder au Quiz interactif en Python
+                  </button>
+                )}
               </div>
             </div>
 
