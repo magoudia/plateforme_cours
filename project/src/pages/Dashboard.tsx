@@ -6,6 +6,7 @@ import { mockCourses } from '../data/mockData';
 import { useState } from 'react';
 import { useNotification } from '../contexts/NotificationContext';
 import { useProgress } from '../contexts/ProgressContext';
+import { Course } from '../types';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -36,7 +37,7 @@ const Dashboard: React.FC = () => {
     .filter(course => !user.enrolledCourses.includes(course.id))
     .slice(0, 3);
 
-  const getCourseCompletion = (course) => {
+  const getCourseCompletion = (course: Course) => {
     const progress = getCourseProgress(course.id);
     if (!progress || !Array.isArray(progress.completedLessons)) return 0;
     // Filtrer les doublons et les ids invalides

@@ -568,6 +568,119 @@ while True:
   <a href="https://youtu.be/8ext9G7xspg" target="_blank" rel="noopener noreferrer">📹 Corrigé en Vidéo - 10 min</a>
 </div>
 `
+          },
+          {
+            id: '3-1-quiz',
+            title: 'Quiz - Introduction à Python',
+            description: 'Testez vos connaissances sur les bases de Python',
+            duration: '10min',
+            type: 'quiz',
+            quiz: {
+              id: 'quiz-3-1',
+              questions: [
+                {
+                  id: 'q1',
+                  text: 'Python est-il un langage compilé ?',
+                  type: 'true-false',
+                  correctAnswer: 'Faux',
+                  explanation: 'Python est un langage interprété.'
+                },
+                {
+                  id: 'q2',
+                  text: 'Quelle commande affiche "Bonjour" en Python ?',
+                  type: 'multiple-choice',
+                  options: ['echo "Bonjour"', 'print("Bonjour")', 'console.log("Bonjour")'],
+                  correctAnswer: 'print("Bonjour")',
+                  explanation: 'print() est la fonction d\'affichage en Python.'
+                },
+                {
+                  id: 'q3',
+                  text: 'Quel site officiel permet de télécharger Python ?',
+                  type: 'multiple-choice',
+                  options: ['python.org', 'python.com', 'pythonsite.net'],
+                  correctAnswer: 'python.org',
+                  explanation: 'Le site officiel est https://www.python.org/'
+                }
+              ],
+              passingScore: 70,
+              timeLimit: 10
+            }
+          },
+          {
+            id: '3-2-quiz',
+            title: 'Quiz - Variables et Types',
+            description: 'Testez vos connaissances sur les variables et les types en Python',
+            duration: '10min',
+            type: 'quiz',
+            quiz: {
+              id: 'quiz-3-2',
+              questions: [
+                {
+                  id: 'q1',
+                  text: 'Quel type de donnée pour la valeur 3.14 ?',
+                  type: 'multiple-choice',
+                  options: ['int', 'float', 'str', 'bool'],
+                  correctAnswer: 'float',
+                  explanation: '3.14 est un nombre à virgule flottante.'
+                },
+                {
+                  id: 'q2',
+                  text: 'Comment déclare-t-on une variable chaîne de caractères ?',
+                  type: 'multiple-choice',
+                  options: ['nom = Alice', 'nom = "Alice"', 'nom = 25'],
+                  correctAnswer: 'nom = "Alice"',
+                  explanation: 'Les chaînes sont entre guillemets.'
+                },
+                {
+                  id: 'q3',
+                  text: 'Quelle fonction permet de connaître le type d\'une variable ?',
+                  type: 'multiple-choice',
+                  options: ['typeof()', 'type()', 'getType()', 'varType()'],
+                  correctAnswer: 'type()',
+                  explanation: 'type() retourne le type d\'une variable.'
+                }
+              ],
+              passingScore: 70,
+              timeLimit: 10
+            }
+          },
+          {
+            id: '3-3-quiz',
+            title: 'Quiz - Structures conditionnelles',
+            description: 'Testez vos connaissances sur les conditions et les boucles en Python',
+            duration: '10min',
+            type: 'quiz',
+            quiz: {
+              id: 'quiz-3-3',
+              questions: [
+                {
+                  id: 'q1',
+                  text: 'Quel mot-clé permet de répéter une action tant qu\'une condition est vraie ?',
+                  type: 'multiple-choice',
+                  options: ['for', 'while', 'if', 'repeat'],
+                  correctAnswer: 'while',
+                  explanation: 'while permet de faire des boucles conditionnelles.'
+                },
+                {
+                  id: 'q2',
+                  text: 'Que fait le mot-clé break ?',
+                  type: 'multiple-choice',
+                  options: ['Passe à l\'itération suivante', 'Arrête la boucle', 'Ignore la condition'],
+                  correctAnswer: 'Arrête la boucle',
+                  explanation: 'break arrête immédiatement la boucle.'
+                },
+                {
+                  id: 'q3',
+                  text: 'Quelle structure permet de choisir entre plusieurs cas ?',
+                  type: 'multiple-choice',
+                  options: ['if/elif/else', 'for', 'switch', 'try/except'],
+                  correctAnswer: 'if/elif/else',
+                  explanation: 'if/elif/else permet de gérer plusieurs cas.'
+                }
+              ],
+              passingScore: 70,
+              timeLimit: 10
+            }
           }
         ]
       }

@@ -206,17 +206,9 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
             ) : (
               <div className="bg-white border rounded-lg p-6">
                 <div className="text-center">
-                  <div className={`text-6xl mb-4 ${quizScore! >= lesson.quiz.passingScore ? 'text-green-500' : 'text-red-500'}`}>
-                    {quizScore}%
-                  </div>
-                  <h3 className={`text-xl font-medium mb-2 ${
-                    quizScore! >= lesson.quiz.passingScore ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {quizScore! >= lesson.quiz.passingScore ? 'Quiz réussi !' : 'Quiz échoué'}
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    Score minimum requis : {lesson.quiz.passingScore}%
-                  </p>
+                  <div className={`text-6xl mb-4 ${quizScore! >= lesson.quiz.passingScore ? 'text-green-500' : 'text-red-500'}`}>{quizScore}%</div>
+                  <h3 className={`text-xl font-medium mb-2 ${quizScore! >= lesson.quiz.passingScore ? 'text-green-600' : 'text-red-600'}`}>{quizScore! >= lesson.quiz.passingScore ? 'Quiz réussi !' : 'Quiz échoué'}</h3>
+                  <p className="text-gray-600 mb-4">Score minimum requis : {lesson.quiz.passingScore}%</p>
                   {quizScore! >= lesson.quiz.passingScore && (
                     <div className="flex items-center justify-center text-green-600 mb-4">
                       <CheckCircle className="h-6 w-6 mr-2" />
@@ -224,6 +216,52 @@ const LessonViewer: React.FC<LessonViewerProps> = ({
                     </div>
                   )}
                 </div>
+                {/* Corrections détaillées */}
+                <div className="mt-8">
+                  <h4 className="text-lg font-semibold mb-4 text-gray-900">Corrections du quiz</h4>
+                  <div className="space-y-6">
+                    {lesson.quiz.questions.map((question, idx) => {
+                      const userAnswer = quizAnswers[question.id];
+                      const isCorrect = userAnswer === question.correctAnswer;
+                      return (
+                        <div key={question.id} className={`p-4 rounded-lg border ${isCorrect ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50'}`}> 
+                          <div className="flex items-center mb-2">
+                            <span className={`inline-block w-6 h-6 mr-2 rounded-full flex items-center justify-center text-white ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`}>{isCorrect ? '✔' : '✗'}</span>
+                            <span className="font-medium text-gray-900">Question {idx + 1} : {question.text}</span>
+                          </div>
+                          <div className="ml-8">
+                            <div className="mb-1">
+                              <span className="font-semibold">Votre réponse :</span> <span className={isCorrect ? 'text-green-700' : 'text-red-700'}>{userAnswer || <em>Non répondu</em>}</span>
+                            </div>
+                            {!isCorrect && (
+                              <div className="mb-1">
+                                <span className="font-semibold">Bonne réponse :</span> <span className="text-green-700">{question.correctAnswer}</span>
+                              </div>
+                            )}
+                            {question.explanation && (
+                              <div className="text-gray-700 mt-1"><span className="font-semibold">Explication :</span> {question.explanation}</div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                {/* Bouton pour recommencer le quiz si échec */}
+                {quizScore! < lesson.quiz.passingScore && (
+                  <div className="mt-8 text-center">
+                    <button
+                      onClick={() => {
+                        setQuizAnswers({});
+                        setShowQuizResults(false);
+                        setQuizScore(null);
+                      }}
+                      className="bg-blue-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    >
+                      Recommencer le quiz
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
